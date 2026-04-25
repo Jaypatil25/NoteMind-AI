@@ -27,7 +27,7 @@ export default function Navbar({ onStartLearning }) {
                     ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
       >
         <div className="flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
-          <a href="#" className="font-display text-2xl text-black tracking-tight">
+          <a href="#" className="font-display text-3xl md:text-4xl text-black tracking-tight">
             NoteMind<sup className="text-xs align-super">®</sup>
           </a>
 
@@ -65,7 +65,7 @@ export default function Navbar({ onStartLearning }) {
                      bg-white/70 backdrop-blur-xl border border-white/30
                      shadow-[0_8px_32px_rgba(0,0,0,0.08),0_2px_8px_rgba(0,0,0,0.04)]"
         >
-          <a href="#" className="font-display text-xl text-black tracking-tight">
+          <a href="#" className="font-display text-2xl text-black tracking-tight">
             NoteMind<sup className="text-[10px] align-super">®</sup>
           </a>
 

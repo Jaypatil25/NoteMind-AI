@@ -1,14 +1,8 @@
-/* ──────────────────────────────────────────
-   Theme — Animations & Effects (Light Mode)
-   ────────────────────────────────────────── */
-
-/* Starting state for animated elements */
 .animate-on-load {
   opacity: 0;
   transform: translateY(30px);
 }
 
-/* Glassmorphism card — light mode */
 .glass-card {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(20px);
@@ -28,7 +22,6 @@
   box-shadow: 0 8px 32px rgba(139, 92, 246, 0.08);
 }
 
-/* Shimmer loading effect — light mode */
 .shimmer-loading {
   background: linear-gradient(
     90deg,
@@ -40,7 +33,6 @@
   animation: shimmer 2s linear infinite;
 }
 
-/* Custom scrollbar — light mode */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -55,7 +47,6 @@
   background: #B0B0B0;
 }
 
-/* 3D Flashcard */
 .flashcard-container {
   perspective: 1000px;
 }
@@ -78,18 +69,15 @@
   transform: rotateY(180deg);
 }
 
-/* Tab indicator */
 .tab-indicator {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Glow effect */
 .glow-accent {
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.05),
               0 0 60px rgba(0, 0, 0, 0.02);
 }
 
-/* Gradient text */
 .gradient-text {
   background: linear-gradient(135deg, #1A1A1A, #555555, #999999);
   -webkit-background-clip: text;
@@ -97,7 +85,6 @@
   background-clip: text;
 }
 
-/* Button press effect */
 .btn-press {
   transition: all 0.2s ease;
 }
@@ -105,20 +92,17 @@
   transform: scale(0.97);
 }
 
-/* Exam timer pulse */
 .timer-warning {
   animation: pulseSoft 1s ease-in-out infinite;
   color: #EF4444;
 }
 
-/* Score ring animation */
 @keyframes scoreReveal {
   from {
     stroke-dashoffset: 283;
   }
 }
 
-/* Hero video gradient overlay */
 .hero-gradient-overlay {
   background: linear-gradient(
     to bottom,

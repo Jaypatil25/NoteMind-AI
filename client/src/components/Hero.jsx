@@ -83,7 +83,7 @@ export default function Hero({ onStartLearning }) {
 
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-white to-transparent pointer-events-none z-[1]" />
 
-      <div className="relative z-10 flex flex-col items-center justify-center h-full pb-40 px-6 text-center max-w-5xl mx-auto">
+      <div className="relative z-10 flex flex-col items-center justify-start h-full pt-40 px-6 text-center max-w-5xl mx-auto">
         <h1
           className="font-display text-5xl md:text-8xl leading-tight md:leading-none tracking-tight text-black
                      animate-on-load animate-fade-rise"
@@ -92,7 +92,7 @@ export default function Hero({ onStartLearning }) {
         </h1>
 
         <p
-          className="mt-6 md:mt-8 text-black-500 text-base md:text-lg max-w-2xl font-body leading-relaxed
+          className="mt-2 md:mt-3 text-black-500 text-base md:text-lg max-w-2xl font-body leading-relaxed
                      animate-on-load animate-fade-rise-delay"
         >
           Transform raw notes into structured summaries, smart quizzes, and active recall flashcards.
@@ -101,7 +101,7 @@ export default function Hero({ onStartLearning }) {
 
         <button
           onClick={onStartLearning}
-          className="mt-8 md:mt-10 bg-black text-white px-8 py-3.5 rounded-full text-sm font-medium font-body
+          className="mt-12 md:mt-16 bg-black text-white px-8 py-3.5 rounded-full text-sm font-medium font-body
                      transition-all duration-300 hover:scale-[1.03] hover:shadow-lg hover:shadow-black/10
                      btn-press animate-on-load animate-fade-rise-delay-2"
         >

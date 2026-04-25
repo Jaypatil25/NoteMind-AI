@@ -31,7 +31,20 @@ async function extractTextFromPDF(buffer) {
   return { text: textParts.join('\n\n'), numPages };
 }
 
-router.post('/', upload.single('pdf'), async (req, res) => {
+router.post('/', (req, res, next) => {
+  upload.single('pdf')(req, res, (err) => {
+    if (err) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({ error: 'PDF must be under 10MB.' });
+      }
+      if (err.message === 'Only PDF files are allowed.') {
+        return res.status(400).json({ error: 'Only PDF files are allowed.' });
+      }
+      return res.status(400).json({ error: err.message || 'Upload failed.' });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No PDF file uploaded.' });
@@ -50,6 +63,11 @@ router.post('/', upload.single('pdf'), async (req, res) => {
     });
   } catch (err) {
     console.error('PDF parse error:', err);
+    
+    if (err.message && err.message.includes('Corrupted PDF')) {
+      return res.status(400).json({ error: 'The PDF file appears to be corrupted.' });
+    }
+    
     return res.status(500).json({ error: 'Failed to parse PDF.' });
   }
 });

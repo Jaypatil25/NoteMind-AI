@@ -75,7 +75,6 @@ export default function NotesInput({ onGenerate, isLoading }) {
   return (
     <section id="studio" className="py-20 px-6">
       <div className="max-w-3xl mx-auto">
-        {/* Section Header */}
         <div className="text-center mb-12">
           <span className="text-neutral-400 text-sm font-medium font-body tracking-widest uppercase">
             Studio
@@ -88,13 +87,12 @@ export default function NotesInput({ onGenerate, isLoading }) {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          {/* Main input card — ChatGPT-style */}
+        <form onSubmit={handleSubmit} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
           <div
-            className="rounded-2xl border border-neutral-200 bg-white shadow-sm
-                       transition-all duration-300 focus-within:shadow-md focus-within:border-neutral-300"
+            className={`rounded-2xl border bg-white shadow-sm
+                       transition-all duration-300 focus-within:shadow-md focus-within:border-neutral-300
+                       ${isDragging ? 'border-blue-400 bg-blue-50' : 'border-neutral-200'}`}
           >
-            {/* Textarea */}
             <textarea
               id="notes-input"
               value={notes}
@@ -105,12 +103,9 @@ export default function NotesInput({ onGenerate, isLoading }) {
               disabled={isLoading}
             />
 
-            {/* Bottom toolbar inside card */}
             <div className="px-4 pb-4 pt-1 flex flex-col gap-3">
-              {/* PDF upload row */}
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  {/* PDF Upload button */}
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -163,16 +158,13 @@ export default function NotesInput({ onGenerate, isLoading }) {
                     </button>
                   )}
 
-                  {/* Character count */}
                   <span className="text-[11px] text-neutral-300 font-body tabular-nums ml-auto flex-shrink-0">
                     {notes.length.toLocaleString()} chars
                   </span>
                 </div>
               </div>
 
-              {/* Controls row */}
               <div className="flex items-center gap-3 flex-wrap">
-                {/* Difficulty */}
                 <div className="relative">
                   <select
                     id="difficulty-select"
@@ -192,7 +184,6 @@ export default function NotesInput({ onGenerate, isLoading }) {
                   </svg>
                 </div>
 
-                {/* Category */}
                 <div className="relative">
                   <select
                     id="category-select"
@@ -212,10 +203,8 @@ export default function NotesInput({ onGenerate, isLoading }) {
                   </svg>
                 </div>
 
-                {/* Spacer */}
                 <div className="flex-1" />
 
-                {/* Generate Button */}
                 <button
                   id="generate-button"
                   type="submit"
@@ -246,7 +235,6 @@ export default function NotesInput({ onGenerate, isLoading }) {
             </div>
           </div>
 
-          {/* PDF Error */}
           {pdfError && (
             <div className="mt-3 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 flex items-center gap-2">
               <span className="text-red-500 text-sm">⚠</span>
@@ -261,7 +249,6 @@ export default function NotesInput({ onGenerate, isLoading }) {
             </div>
           )}
 
-          {/* Drag overlay */}
           {isDragging && (
             <div
               onDrop={handleDrop}
