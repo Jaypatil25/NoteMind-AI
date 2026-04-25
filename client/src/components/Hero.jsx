@@ -1,16 +1,19 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Hero({ onStartLearning }) {
   const videoRef = useRef(null);
   const opacityRef = useRef(0);
   const rafRef = useRef(null);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    let fadeState = 'in';    let startTime = null;
+    let fadeState = 'in';
+    let startTime = null;
     const FADE_DURATION = 500;
+
     function animate(timestamp) {
       if (!startTime) startTime = timestamp;
       const elapsed = timestamp - startTime;
@@ -51,37 +54,54 @@ export default function Hero({ onStartLearning }) {
     }
 
     function handleCanPlay() {
-      video.play().catch(() => {});
+      video.play().catch((err) => {
+        console.log('Video autoplay prevented:', err);
+      });
       rafRef.current = requestAnimationFrame(animate);
+    }
+
+    function handleError(e) {
+      console.error('Video error:', e);
+      setVideoError(true);
     }
 
     video.addEventListener('ended', handleEnded);
     video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('error', handleError);
 
     return () => {
       video.removeEventListener('ended', handleEnded);
       video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('error', handleError);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, []);
 
   return (
     <section className="relative w-full h-screen overflow-hidden bg-white">
-      <video
-        ref={videoRef}
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-        style={{ opacity: 0 }}
-        muted
-        playsInline
-        preload="auto"
-      >
-        <source
-          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4"
-          type="video/mp4"
-        />
-      </video>
+      {!videoError && (
+        <video
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          style={{ opacity: 0 }}
+          muted
+          playsInline
+          preload="metadata"
+          loading="lazy"
+          crossOrigin="anonymous"
+        >
+          <source
+            src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4"
+            type="video/mp4"
+          />
+        </video>
+      )}
 
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-white to-transparent pointer-events-none z-[1]" />
+
+      {videoError && (
+        <div className="absolute inset-0 bg-gradient-to-br from-neutral-50 to-neutral-100 pointer-events-none z-0" />
+      )}
 
       <div className="relative z-10 flex flex-col items-center justify-start h-full pt-40 px-6 text-center max-w-5xl mx-auto">
         <h1
