@@ -1,4 +1,4 @@
-const API_BASE = '/api';
+const API_BASE = 'https://notemind-ai-p4wh.onrender.com/api';
 
 export async function generateContent(notes, difficulty, category) {
   const response = await fetch(`${API_BASE}/generate`, {

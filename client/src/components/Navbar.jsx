@@ -14,9 +14,9 @@ export default function Navbar({ onStartLearning }) {
 
   const menuItems = [
     { label: 'Home' },
-    { label: 'Studio' },
-    { label: 'About' },
-    { label: 'Journal' },
+    // { label: 'Studio' },
+    // { label: 'About' },
+    // { label: 'Journal' },
     { label: 'Reach Us' },
   ];
 
