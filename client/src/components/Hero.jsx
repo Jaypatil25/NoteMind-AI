@@ -75,11 +75,11 @@ export default function Hero({ onStartLearning }) {
       video.removeEventListener('error', handleError);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [isMobile]);
+  }, []);
 
   return (
     <section className="relative w-full h-screen overflow-hidden bg-white">
-      {!isMobile && !videoError && (
+      {!videoError && (
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
@@ -104,7 +104,7 @@ export default function Hero({ onStartLearning }) {
 
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-white to-transparent pointer-events-none z-[1]" />
 
-      {(isMobile || videoError) && (
+      {videoError && (
         <div className="absolute inset-0 bg-gradient-to-br from-neutral-50 via-white to-neutral-50 pointer-events-none z-0" />
       )}
 
