@@ -3,9 +3,6 @@ import Groq from 'groq-sdk';
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const MODEL = 'llama-3.3-70b-versatile';
 
-/**
- * Generate summary, MCQs, and flashcards from notes.
- */
 export async function handleGenerate(req, res) {
   try {
     const { notes, difficulty = 'Medium', category = 'General' } = req.body;
@@ -16,7 +13,6 @@ export async function handleGenerate(req, res) {
 
     const context = `Difficulty: ${difficulty}. Category: ${category}.`;
 
-    // Run all three Groq calls in parallel
     const [summaryResult, mcqsResult, flashcardsResult] = await Promise.all([
       generateSummary(notes, context),
       generateMCQs(notes, context),
@@ -36,8 +32,6 @@ export async function handleGenerate(req, res) {
     });
   }
 }
-
-// ─── Helpers ──────────────────────────────────────────
 
 async function generateSummary(notes, context) {
   const response = await groq.chat.completions.create({
@@ -61,7 +55,6 @@ async function generateSummary(notes, context) {
   try {
     return JSON.parse(text);
   } catch {
-    // Attempt to extract JSON from the response
     const match = text.match(/\{[\s\S]*\}/);
     if (match) return JSON.parse(match[0]);
     return { points: [text] };

@@ -5,7 +5,7 @@ import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
 const router = Router();
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype === 'application/pdf') {
       cb(null, true);
@@ -15,9 +15,6 @@ const upload = multer({
   },
 });
 
-/**
- * Extract all text from a PDF buffer using pdfjs-dist.
- */
 async function extractTextFromPDF(buffer) {
   const uint8Array = new Uint8Array(buffer);
   const doc = await getDocument({ data: uint8Array, useSystemFonts: true }).promise;
