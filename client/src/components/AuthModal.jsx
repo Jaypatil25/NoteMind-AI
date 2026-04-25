@@ -20,20 +20,28 @@ export default function AuthModal({ isOpen, onClose }) {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
 
-    const popup = signInWithPopup(auth, provider);
     setLoading(true);
 
-    popup
-      .then(() => onClose())
+    signInWithPopup(auth, provider)
+      .then(() => {
+        // Popup succeeded - close modal and let auth state update
+        onClose();
+      })
       .catch((err) => {
         const code = err.code;
+        
+        // If popup is blocked, fall back to redirect
         if (code === 'auth/popup-blocked') {
+          // Don't catch the redirect promise - let it navigate
           signInWithRedirect(auth, provider);
           return;
         }
+        
+        // Only show error for actual errors, not cancellations
         if (code !== 'auth/cancelled-popup-request') {
           setError(ERROR_MESSAGES[code] ?? 'Sign-in failed. Please try again.');
         }
+        
         setLoading(false);
       });
   }
