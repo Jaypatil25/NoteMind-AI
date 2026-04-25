@@ -1,26 +1,36 @@
 import { useState, useRef } from 'react';
 import { uploadPDF } from '../utils/api';
-
-const DIFFICULTIES = ['Easy', 'Medium', 'Hard'];
-const CATEGORIES = ['General', 'Science', 'Mathematics', 'History', 'Programming', 'Literature', 'Business'];
+import { useAuth } from '../contexts/AuthContext';
+import AuthModal from './AuthModal';
 
 export default function NotesInput({ onGenerate, isLoading }) {
   const [notes, setNotes] = useState('');
-  const [difficulty, setDifficulty] = useState('Medium');
-  const [category, setCategory] = useState('General');
   const [isDragging, setIsDragging] = useState(false);
   const [pdfInfo, setPdfInfo] = useState(null);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [pdfError, setPdfError] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const fileInputRef = useRef(null);
+  const { currentUser } = useAuth();
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!notes.trim() || isLoading) return;
-    onGenerate(notes, difficulty, category);
+    
+    if (!currentUser) {
+      setShowAuthModal(true);
+      return;
+    }
+    
+    onGenerate(notes);
   }
 
   async function handlePDF(file) {
+    if (!currentUser) {
+      setShowAuthModal(true);
+      return;
+    }
+    
     if (!file || file.type !== 'application/pdf') {
       setPdfError('Please upload a PDF file.');
       return;
@@ -105,7 +115,13 @@ export default function NotesInput({ onGenerate, isLoading }) {
 
             <div className="px-4 pb-4 pt-1 flex flex-col gap-3">
               <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
+                <span className="text-[11px] text-neutral-300 font-body tabular-nums">
+                  {notes.length.toLocaleString()} chars
+                </span>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-3">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -116,27 +132,27 @@ export default function NotesInput({ onGenerate, isLoading }) {
 
                   {pdfLoading ? (
                     <div className="flex items-center gap-2 text-neutral-400">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      <span className="text-xs font-body">Extracting PDF...</span>
+                      <span className="text-sm font-body">Extracting PDF...</span>
                     </div>
                   ) : pdfInfo ? (
-                    <div className="flex items-center gap-2 text-emerald-600">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <div className="flex items-center gap-3 text-emerald-600 bg-emerald-50 px-4 py-2.5 rounded-full border border-emerald-200">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
                         <polyline points="14,2 14,8 20,8" />
                       </svg>
-                      <span className="text-xs font-body truncate">
+                      <span className="text-sm font-body truncate max-w-[200px]" title={pdfInfo.filename}>
                         {pdfInfo.filename} — {pdfInfo.pages} page{pdfInfo.pages !== 1 ? 's' : ''}
                       </span>
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); clearPdf(); }}
-                        className="text-neutral-400 hover:text-red-500 transition-colors flex-shrink-0"
+                        className="text-emerald-400 hover:text-red-500 transition-colors flex-shrink-0"
                       >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                           <path d="M18 6L6 18M6 6l12 12" />
                         </svg>
                       </button>
@@ -145,78 +161,34 @@ export default function NotesInput({ onGenerate, isLoading }) {
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="flex items-center gap-1.5 text-neutral-400 hover:text-neutral-600 transition-colors"
+                      className="flex items-center gap-2.5 text-neutral-600 hover:text-neutral-800 transition-colors
+                                 bg-neutral-50 hover:bg-neutral-100 px-6 py-3 rounded-full border border-neutral-200
+                                 hover:border-neutral-300 shadow-sm hover:shadow-md"
                       disabled={pdfLoading}
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
                         <polyline points="14,2 14,8 20,8" />
                         <line x1="12" y1="18" x2="12" y2="12" />
                         <polyline points="9,15 12,12 15,15" />
                       </svg>
-                      <span className="text-xs font-body">Upload PDF</span>
+                      <span className="text-sm font-body font-medium">Upload PDF</span>
                     </button>
                   )}
-
-                  <span className="text-[11px] text-neutral-300 font-body tabular-nums ml-auto flex-shrink-0">
-                    {notes.length.toLocaleString()} chars
-                  </span>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-3 flex-wrap">
-                <div className="relative">
-                  <select
-                    id="difficulty-select"
-                    value={difficulty}
-                    onChange={(e) => setDifficulty(e.target.value)}
-                    className="appearance-none bg-neutral-50 border border-neutral-200 text-text-primary text-xs font-body
-                               pl-3 pr-7 py-2 rounded-lg outline-none cursor-pointer
-                               transition-colors hover:border-neutral-300 focus:border-neutral-400"
-                    disabled={isLoading}
-                  >
-                    {DIFFICULTIES.map((d) => (
-                      <option key={d} value={d}>{d}</option>
-                    ))}
-                  </select>
-                  <svg className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="6,9 12,15 18,9" />
-                  </svg>
-                </div>
-
-                <div className="relative">
-                  <select
-                    id="category-select"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="appearance-none bg-neutral-50 border border-neutral-200 text-text-primary text-xs font-body
-                               pl-3 pr-7 py-2 rounded-lg outline-none cursor-pointer
-                               transition-colors hover:border-neutral-300 focus:border-neutral-400"
-                    disabled={isLoading}
-                  >
-                    {CATEGORIES.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                  <svg className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <polyline points="6,9 12,15 18,9" />
-                  </svg>
-                </div>
-
-                <div className="flex-1" />
 
                 <button
                   id="generate-button"
                   type="submit"
                   disabled={isLoading || !notes.trim()}
-                  className="bg-black text-white px-5 py-2 rounded-lg text-xs font-medium font-body
-                             transition-all duration-200 hover:bg-neutral-800
+                  className="bg-black text-white px-8 py-3.5 rounded-full text-sm font-medium font-body
+                             transition-all duration-200 hover:bg-neutral-800 hover:scale-[1.02]
                              disabled:opacity-30 disabled:cursor-not-allowed
-                             btn-press flex items-center gap-2"
+                             btn-press flex items-center gap-2 shadow-lg"
                 >
                   {isLoading ? (
                     <>
-                      <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
@@ -224,7 +196,7 @@ export default function NotesInput({ onGenerate, isLoading }) {
                     </>
                   ) : (
                     <>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                       </svg>
                       Generate
@@ -262,6 +234,11 @@ export default function NotesInput({ onGenerate, isLoading }) {
               </div>
             </div>
           )}
+
+          <AuthModal 
+            isOpen={showAuthModal} 
+            onClose={() => setShowAuthModal(false)} 
+          />
         </form>
       </div>
     </section>
