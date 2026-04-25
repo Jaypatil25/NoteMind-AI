@@ -1,4 +1,21 @@
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
+// Detect API URL based on environment
+const getApiUrl = () => {
+  // If explicit VITE_API_URL is set, use it
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // In production (Vercel), use Render backend
+  if (import.meta.env.PROD) {
+    return 'https://notemind-ai-p4wh.onrender.com/api';
+  }
+  
+  // Default for local development
+  return 'http://localhost:5001/api';
+};
+
+const API_BASE = getApiUrl();
 
 export async function generateContent(notes, difficulty, category) {
   const response = await fetch(`${API_BASE}/generate`, {
