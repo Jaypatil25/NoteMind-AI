@@ -9,10 +9,8 @@ export default function Hero({ onStartLearning }) {
     const video = videoRef.current;
     if (!video) return;
 
-    let fadeState = 'in'; // 'in' | 'visible' | 'out'
-    let startTime = null;
-    const FADE_DURATION = 500; // ms
-
+    let fadeState = 'in';    let startTime = null;
+    const FADE_DURATION = 500;
     function animate(timestamp) {
       if (!startTime) startTime = timestamp;
       const elapsed = timestamp - startTime;
@@ -69,7 +67,6 @@ export default function Hero({ onStartLearning }) {
 
   return (
     <section className="relative w-full h-screen overflow-hidden bg-white">
-      {/* Video Background */}
       <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover pointer-events-none"
@@ -84,12 +81,9 @@ export default function Hero({ onStartLearning }) {
         />
       </video>
 
-      {/* Bottom gradient — fades video tail into dark background */}
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-white to-transparent pointer-events-none z-[1]" />
 
-      {/* Hero Content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full pb-40 px-6 text-center max-w-5xl mx-auto">
-        {/* Headline */}
         <h1
           className="font-display text-5xl md:text-8xl leading-tight md:leading-none tracking-tight text-black
                      animate-on-load animate-fade-rise"
@@ -97,7 +91,6 @@ export default function Hero({ onStartLearning }) {
           Turn your <em className="italic text-neutral-400">notes</em> into <em className="italic text-neutral-400">knowledge that sticks.</em>
         </h1>
 
-        {/* Description */}
         <p
           className="mt-6 md:mt-8 text-black-500 text-base md:text-lg max-w-2xl font-body leading-relaxed
                      animate-on-load animate-fade-rise-delay"
@@ -106,7 +99,6 @@ export default function Hero({ onStartLearning }) {
           Learn faster, revise smarter, and retain more with AI.
         </p>
 
-        {/* CTA Button */}
         <button
           onClick={onStartLearning}
           className="mt-8 md:mt-10 bg-black text-white px-8 py-3.5 rounded-full text-sm font-medium font-body
