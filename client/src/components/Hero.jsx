@@ -25,32 +25,8 @@ export default function Hero({ onStartLearning }) {
         }
       }
 
-      // Check if near end for fade out
-      if (video.duration && video.currentTime >= video.duration - 0.5) {
-        if (fadeState !== 'out') {
-          fadeState = 'out';
-          startTime = timestamp;
-        }
-      }
-
-      if (fadeState === 'out') {
-        const outElapsed = timestamp - startTime;
-        opacityRef.current = Math.max(1 - outElapsed / FADE_DURATION, 0);
-      }
-
       video.style.opacity = opacityRef.current;
       rafRef.current = requestAnimationFrame(animate);
-    }
-
-    function handleEnded() {
-      video.style.opacity = 0;
-      opacityRef.current = 0;
-      setTimeout(() => {
-        video.currentTime = 0;
-        video.play().catch(() => {});
-        fadeState = 'in';
-        startTime = null;
-      }, 100);
     }
 
     function handleCanPlay() {
@@ -65,12 +41,10 @@ export default function Hero({ onStartLearning }) {
       setVideoError(true);
     }
 
-    video.addEventListener('ended', handleEnded);
     video.addEventListener('canplay', handleCanPlay);
     video.addEventListener('error', handleError);
 
     return () => {
-      video.removeEventListener('ended', handleEnded);
       video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('error', handleError);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -124,7 +98,7 @@ export default function Hero({ onStartLearning }) {
           className="font-display text-5xl md:text-8xl leading-tight md:leading-none tracking-tight text-black
                      animate-on-load animate-fade-rise"
         >
-          Turn your <em className="italic text-neutral-400">notes</em> into <em className="italic text-neutral-400">knowledge that sticks.</em>
+          Turn your <em className="italic text-neutral-400">notes</em> into <em className="italic text-neutral-400">knowledge</em> <em className="italic text-black -400">that sticks.</em>
         </h1>
 
         <p
