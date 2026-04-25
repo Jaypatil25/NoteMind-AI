@@ -83,15 +83,6 @@ export default function Navbar({ onStartLearning }) {
           </div>
 
           <button
-            onClick={onStartLearning}
-            className="hidden md:block bg-black text-white px-5 py-2 rounded-full text-sm font-medium font-body
-                       transition-all duration-300 hover:scale-[1.03] hover:shadow-lg
-                       btn-press"
-          >
-            Start Learning
-          </button>
-
-          <button
             className="md:hidden text-black"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"

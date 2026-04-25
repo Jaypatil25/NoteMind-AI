@@ -62,7 +62,9 @@ export default function FlashcardTab({ data }) {
                 <div className="flex items-center gap-2 mb-4">
                   <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 text-xs font-bold
                                   flex items-center justify-center font-body">
-                    ✓
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-emerald-600 inline-block">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
                   </span>
                   <span className="text-xs text-emerald-600 font-body uppercase tracking-wider">Answer</span>
                 </div>

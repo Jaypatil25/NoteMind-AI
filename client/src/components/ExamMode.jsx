@@ -59,7 +59,11 @@ export default function ExamMode({ data }) {
     return (
       <div className="glass-card p-10 text-center max-w-lg mx-auto">
         <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-6">
-          <span className="text-3xl">🎯</span>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-neutral-700">
+            <circle cx="12" cy="12" r="10" />
+            <circle cx="12" cy="12" r="6" />
+            <circle cx="12" cy="12" r="2" />
+          </svg>
         </div>
         <h3 className="font-display text-3xl text-text-primary mb-3">Exam Mode</h3>
         <p className="text-text-secondary font-body text-sm mb-2">
@@ -128,9 +132,18 @@ export default function ExamMode({ data }) {
             return (
               <div key={idx} className="glass-card p-5">
                 <div className="flex items-start gap-3 mb-3">
-                  <span className={`flex-shrink-0 w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center font-body
-                    ${isCorrect ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-500'}`}>
-                    {isCorrect ? '✓' : '✗'}
+                  <span className={`flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center font-body
+                    ${isCorrect ? 'bg-emerald-50' : 'bg-red-50'}`}>
+                    {isCorrect ? (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-emerald-600">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    ) : (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-red-600">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    )}
                   </span>
                   <p className="text-text-primary font-body text-sm">{q.question}</p>
                 </div>

@@ -73,11 +73,11 @@ export default function NotesInput({ onGenerate, isLoading }) {
   }
 
   return (
-    <section id="studio" className="py-20 px-6">
+    <section id="workspace" className="py-20 px-6">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
           <span className="text-neutral-400 text-sm font-medium font-body tracking-widest uppercase">
-            Studio
+            Workspace
           </span>
           <h2 className="font-display text-4xl md:text-6xl mt-3 text-text-black-500">
             Paste your notes
