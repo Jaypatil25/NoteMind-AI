@@ -13,7 +13,16 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getRedirectResult(auth).catch(() => {});
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          setCurrentUser(result.user);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        setLoading(false);
+      });
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
