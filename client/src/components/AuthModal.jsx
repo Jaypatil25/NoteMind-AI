@@ -1,6 +1,14 @@
 import { useState } from 'react';
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
 import { auth } from '../firebase/config';
+
+const ERROR_MESSAGES = {
+  'auth/popup-blocked': 'Popup was blocked. Redirecting you to sign in...',
+  'auth/popup-closed-by-user': 'Sign-in was cancelled. Please try again.',
+  'auth/cancelled-popup-request': null,
+  'auth/network-request-failed': 'Network error. Please check your connection.',
+  'auth/too-many-requests': 'Too many attempts. Please try again later.',
+};
 
 export default function AuthModal({ isOpen, onClose }) {
   const [loading, setLoading] = useState(false);
@@ -12,13 +20,29 @@ export default function AuthModal({ isOpen, onClose }) {
     setLoading(true);
     setError('');
 
+    const provider = new GoogleAuthProvider();
+
     try {
-      const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       onClose();
     } catch (err) {
-      setError(err.message);
-    } finally {
+      const code = err.code;
+
+      if (code === 'auth/popup-blocked') {
+        setError(ERROR_MESSAGES['auth/popup-blocked']);
+        try {
+          await signInWithRedirect(auth, provider);
+        } catch {
+          setError('Sign-in failed. Please try again.');
+          setLoading(false);
+        }
+        return;
+      }
+
+      const message = ERROR_MESSAGES[code];
+      if (message !== null) {
+        setError(message ?? 'Sign-in failed. Please try again.');
+      }
       setLoading(false);
     }
   }
