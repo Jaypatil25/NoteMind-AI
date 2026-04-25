@@ -75,11 +75,11 @@ export default function Hero({ onStartLearning }) {
       video.removeEventListener('error', handleError);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <section className="relative w-full h-screen overflow-hidden bg-white">
-      {!videoError && (
+      {!isMobile && !videoError && (
         <video
           ref={videoRef}
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
@@ -89,6 +89,11 @@ export default function Hero({ onStartLearning }) {
           preload="metadata"
           loading="lazy"
           crossOrigin="anonymous"
+          poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'%3E%3Crect fill='%23f5f5f5' width='1280' height='720'/%3E%3C/svg%3E"
+          onError={(e) => {
+            console.error('Video error:', e);
+            setVideoError(true);
+          }}
         >
           <source
             src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260328_083109_283f3553-e28f-428b-a723-d639c617eb2b.mp4"
@@ -99,8 +104,8 @@ export default function Hero({ onStartLearning }) {
 
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-white to-transparent pointer-events-none z-[1]" />
 
-      {videoError && (
-        <div className="absolute inset-0 bg-gradient-to-br from-neutral-50 to-neutral-100 pointer-events-none z-0" />
+      {(isMobile || videoError) && (
+        <div className="absolute inset-0 bg-gradient-to-br from-neutral-50 via-white to-neutral-50 pointer-events-none z-0" />
       )}
 
       <div className="relative z-10 flex flex-col items-center justify-start h-full pt-40 px-6 text-center max-w-5xl mx-auto">
