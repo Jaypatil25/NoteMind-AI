@@ -23,7 +23,6 @@ export default function App() {
     try {
       const data = await generateContent(notes, difficulty, category);
       setResults(data);
-      // Scroll to output after a brief delay to let DOM update
       setTimeout(() => {
         outputRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
@@ -39,12 +38,10 @@ export default function App() {
       <Navbar onStartLearning={scrollToStudio} />
       <Hero onStartLearning={scrollToStudio} />
 
-      {/* Studio Section */}
       <div ref={studioRef}>
         <NotesInput onGenerate={handleGenerate} isLoading={isLoading} />
       </div>
 
-      {/* Error Message */}
       {error && (
         <div className="max-w-4xl mx-auto px-6 mb-8">
           <div className="bg-danger/10 border border-danger/20 rounded-xl p-4 flex items-start gap-3">
@@ -63,7 +60,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Loading Skeleton */}
       {isLoading && (
         <div className="max-w-4xl mx-auto px-6 py-16">
           <div className="text-center mb-10">
@@ -83,7 +79,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Output Section */}
       <div ref={outputRef}>
         {results && !isLoading && <OutputTabs data={results} />}
       </div>

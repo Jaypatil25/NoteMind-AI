@@ -1,12 +1,5 @@
 const API_BASE = '/api';
 
-/**
- * Generate summary, MCQs, and flashcards from notes.
- * @param {string} notes - The raw notes text
- * @param {string} difficulty - Easy | Medium | Hard
- * @param {string} category - Subject category
- * @returns {Promise<{summary: object, mcqs: object, flashcards: object}>}
- */
 export async function generateContent(notes, difficulty, category) {
   const response = await fetch(`${API_BASE}/generate`, {
     method: 'POST',
@@ -22,11 +15,6 @@ export async function generateContent(notes, difficulty, category) {
   return response.json();
 }
 
-/**
- * Upload a PDF and extract its text content.
- * @param {File} file - The PDF file
- * @returns {Promise<{text: string, pages: number, filename: string}>}
- */
 export async function uploadPDF(file) {
   const formData = new FormData();
   formData.append('pdf', file);
