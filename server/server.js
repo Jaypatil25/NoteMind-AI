@@ -7,29 +7,9 @@ import uploadRoute from './routes/upload.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS configuration for production
-const allowedOrigins = [
-  'https://note-mind-ai-two.vercel.app',
-  'https://www.note-mind-ai-two.vercel.app',
-  'http://localhost:3000',
-  'http://localhost:5173',
-  'http://localhost:5174',
-];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log(`CORS rejected origin: ${origin}`);
-      callback(new Error('CORS not allowed'));
-    }
-  },
-  credentials: true,
-}));
+app.use(cors());
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
