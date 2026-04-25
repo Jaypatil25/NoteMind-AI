@@ -1,0 +1,12 @@
+/* ──────────────────────────────────────────
+   Google Fonts — Instrument Serif + Inter
+   Loaded via <link> in index.html for performance
+   ────────────────────────────────────────── */
+
+.font-display {
+  font-family: 'Instrument Serif', serif;
+}
+
+.font-body {
+  font-family: 'Inter', sans-serif;
+}

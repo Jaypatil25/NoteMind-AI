@@ -1,0 +1,130 @@
+/* ──────────────────────────────────────────
+   Theme — Animations & Effects (Light Mode)
+   ────────────────────────────────────────── */
+
+/* Starting state for animated elements */
+.animate-on-load {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+/* Glassmorphism card — light mode */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.glass-card-hover {
+  transition: all 0.3s ease;
+}
+.glass-card-hover:hover {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(139, 92, 246, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(139, 92, 246, 0.08);
+}
+
+/* Shimmer loading effect — light mode */
+.shimmer-loading {
+  background: linear-gradient(
+    90deg,
+    rgba(245, 245, 245, 1) 0%,
+    rgba(235, 235, 235, 1) 50%,
+    rgba(245, 245, 245, 1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+}
+
+/* Custom scrollbar — light mode */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #FFFFFF;
+}
+::-webkit-scrollbar-thumb {
+  background: #D0D0D0;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B0B0B0;
+}
+
+/* 3D Flashcard */
+.flashcard-container {
+  perspective: 1000px;
+}
+.flashcard-inner {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+  position: relative;
+}
+.flashcard-inner.flipped {
+  transform: rotateY(180deg);
+}
+.flashcard-front,
+.flashcard-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  position: absolute;
+  inset: 0;
+}
+.flashcard-back {
+  transform: rotateY(180deg);
+}
+
+/* Tab indicator */
+.tab-indicator {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glow effect */
+.glow-accent {
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05),
+              0 0 60px rgba(0, 0, 0, 0.02);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #1A1A1A, #555555, #999999);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Button press effect */
+.btn-press {
+  transition: all 0.2s ease;
+}
+.btn-press:active {
+  transform: scale(0.97);
+}
+
+/* Exam timer pulse */
+.timer-warning {
+  animation: pulseSoft 1s ease-in-out infinite;
+  color: #EF4444;
+}
+
+/* Score ring animation */
+@keyframes scoreReveal {
+  from {
+    stroke-dashoffset: 283;
+  }
+}
+
+/* Hero video gradient overlay */
+.hero-gradient-overlay {
+  background: linear-gradient(
+    to bottom,
+    #FFFFFF 0%,
+    transparent 30%,
+    transparent 70%,
+    #FFFFFF 100%
+  );
+}
