@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { GoogleAuthProvider, signInWithPopup, signInWithRedirect } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../firebase/config';
 
 const ERROR_MESSAGES = {
-  'auth/popup-blocked': 'Popup was blocked. Redirecting you to sign in...',
+  'auth/popup-blocked': 'Popup was blocked by your browser. Please allow popups for this site and try again.',
   'auth/popup-closed-by-user': 'Sign-in was cancelled. Please try again.',
   'auth/cancelled-popup-request': null,
   'auth/network-request-failed': 'Network error. Please check your connection.',
@@ -16,33 +16,24 @@ export default function AuthModal({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  async function handleGoogleSignIn() {
-    setLoading(true);
+  function handleGoogleSignIn() {
     setError('');
 
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
 
-    try {
-      await signInWithPopup(auth, provider);
-      onClose();
-    } catch (err) {
-      const code = err.code;
+    const popup = signInWithPopup(auth, provider);
+    setLoading(true);
 
-      if (code === 'auth/popup-blocked') {
-        setError(ERROR_MESSAGES['auth/popup-blocked']);
-        signInWithRedirect(auth, provider);
-        return;
-      }
-
-      if (code === 'auth/cancelled-popup-request') {
+    popup
+      .then(() => onClose())
+      .catch((err) => {
+        const code = err.code;
+        if (code !== 'auth/cancelled-popup-request') {
+          setError(ERROR_MESSAGES[code] ?? 'Sign-in failed. Please try again.');
+        }
         setLoading(false);
-        return;
-      }
-
-      setError(ERROR_MESSAGES[code] ?? 'Sign-in failed. Please try again.');
-      setLoading(false);
-    }
+      });
   }
 
   return (
