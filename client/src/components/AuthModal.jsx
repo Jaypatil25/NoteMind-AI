@@ -30,19 +30,16 @@ export default function AuthModal({ isOpen, onClose }) {
 
       if (code === 'auth/popup-blocked') {
         setError(ERROR_MESSAGES['auth/popup-blocked']);
-        try {
-          await signInWithRedirect(auth, provider);
-        } catch {
-          setError('Sign-in failed. Please try again.');
-          setLoading(false);
-        }
+        signInWithRedirect(auth, provider);
         return;
       }
 
-      const message = ERROR_MESSAGES[code];
-      if (message !== null) {
-        setError(message ?? 'Sign-in failed. Please try again.');
+      if (code === 'auth/cancelled-popup-request') {
+        setLoading(false);
+        return;
       }
+
+      setError(ERROR_MESSAGES[code] ?? 'Sign-in failed. Please try again.');
       setLoading(false);
     }
   }
