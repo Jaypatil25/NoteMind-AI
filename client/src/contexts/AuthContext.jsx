@@ -13,13 +13,24 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let unsubscribe;
+
+    // Handle redirect result from OAuth redirect flow
     getRedirectResult(auth)
       .then((result) => {
-        if (result?.user) setCurrentUser(result.user);
+        if (result?.user) {
+          setCurrentUser(result.user);
+        }
       })
-      .catch(() => {});
+      .catch((error) => {
+        // Log actual errors, ignore user cancellations
+        if (error.code !== 'auth/popup-closed-by-user') {
+          console.error('Redirect result error:', error);
+        }
+      });
 
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    // Listen for auth state changes
+    unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
       setLoading(false);
     });
