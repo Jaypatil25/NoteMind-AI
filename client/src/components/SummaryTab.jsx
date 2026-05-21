@@ -12,7 +12,7 @@ export default function SummaryTab({ data }) {
   return (
     <div className="glass-card p-8">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center">
+        <div className="size-10 rounded-xl bg-neutral-100 flex items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A" strokeWidth="2">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
             <polyline points="14,2 14,8 20,8" />
@@ -30,11 +30,11 @@ export default function SummaryTab({ data }) {
       <ul className="space-y-4">
         {points.map((point, idx) => (
           <li
-            key={idx}
+            key={point}
             className="flex gap-3 items-start group"
             style={{ animationDelay: `${idx * 80}ms` }}
           >
-            <span className="mt-1.5 w-2 h-2 rounded-full bg-black flex-shrink-0 group-hover:scale-125 transition-transform" />
+            <span className="mt-1.5 size-2 rounded-full bg-gray-950 flex-shrink-0 group-hover:scale-125 transition-transform" />
             <p className="text-text-secondary font-body text-sm leading-relaxed group-hover:text-text-primary transition-colors">
               {point}
             </p>

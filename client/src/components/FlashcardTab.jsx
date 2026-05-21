@@ -20,9 +20,16 @@ export default function FlashcardTab({ data }) {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {cards.map((card, idx) => (
         <div
-          key={idx}
+          key={card.question}
           className="flashcard-container cursor-pointer"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              toggleFlip(idx);
+            }
+          }}
           onClick={() => toggleFlip(idx)}
+          role="button"
+          tabIndex={0}
           style={{ minHeight: '220px' }}
         >
           <div className={`flashcard-inner w-full h-full ${flippedCards[idx] ? 'flipped' : ''}`}
@@ -31,7 +38,7 @@ export default function FlashcardTab({ data }) {
                  style={{ minHeight: '220px' }}>
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="w-7 h-7 rounded-lg bg-neutral-100 text-text-primary text-xs font-bold
+                  <span className="size-7 rounded-lg bg-neutral-100 text-text-primary text-xs font-bold
                                   flex items-center justify-center font-body">
                     {idx + 1}
                   </span>
@@ -60,7 +67,7 @@ export default function FlashcardTab({ data }) {
                  }}>
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 text-xs font-bold
+                  <span className="size-7 rounded-lg bg-emerald-50 text-emerald-600 text-xs font-bold
                                   flex items-center justify-center font-body">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-emerald-600 inline-block">
                       <polyline points="20 6 9 17 4 12" />

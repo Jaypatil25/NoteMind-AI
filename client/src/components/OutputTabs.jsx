@@ -51,25 +51,25 @@ const TABS = [
   },
 ];
 
+function TabContent({ activeTab, data }) {
+  switch (activeTab) {
+    case 'summary':
+      return <SummaryTab data={data.summary} />;
+    case 'mcqs':
+      return <McqTab data={data.mcqs} />;
+    case 'flashcards':
+      return <FlashcardTab data={data.flashcards} />;
+    case 'exam':
+      return <ExamMode data={data.mcqs} />;
+    default:
+      return null;
+  }
+}
+
 export default function OutputTabs({ data }) {
   const [activeTab, setActiveTab] = useState('summary');
 
   if (!data) return null;
-
-  function renderTab() {
-    switch (activeTab) {
-      case 'summary':
-        return <SummaryTab data={data.summary} />;
-      case 'mcqs':
-        return <McqTab data={data.mcqs} />;
-      case 'flashcards':
-        return <FlashcardTab data={data.flashcards} />;
-      case 'exam':
-        return <ExamMode data={data.mcqs} />;
-      default:
-        return null;
-    }
-  }
 
   return (
     <section id="output" className="py-16 px-6">
@@ -92,11 +92,11 @@ export default function OutputTabs({ data }) {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-5 py-2.5 rounded-xl text-sm font-body font-medium transition-all duration-300 flex items-center gap-2
                   ${activeTab === tab.id
-                    ? 'bg-black text-white shadow-sm'
+                    ? 'bg-gray-950 text-white shadow-sm'
                     : 'text-neutral-400 hover:text-text-primary'
                   }`}
               >
-                <span className="flex-shrink-0 w-4 h-4">{tab.icon}</span>
+                <span className="flex-shrink-0 size-4">{tab.icon}</span>
                 {tab.label}
               </button>
             ))}
@@ -104,7 +104,7 @@ export default function OutputTabs({ data }) {
         </div>
 
         <div className="animate-slide-up">
-          {renderTab()}
+          <TabContent activeTab={activeTab} data={data} />
         </div>
       </div>
     </section>

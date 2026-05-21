@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useTransition } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import NotesInput from './components/NotesInput';
@@ -9,7 +9,7 @@ import { generateContent } from './utils/api';
 
 export default function App() {
   const [results, setResults] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [error, setError] = useState(null);
   const studioRef = useRef(null);
   const outputRef = useRef(null);
@@ -20,18 +20,17 @@ export default function App() {
 
   async function handleGenerate(notes) {
     setError(null);
-    setIsLoading(true);
-    try {
-      const data = await generateContent(notes);
-      setResults(data);
-      setTimeout(() => {
-        outputRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
+    startTransition(async () => {
+      try {
+        const data = await generateContent(notes);
+        setResults(data);
+        setTimeout(() => {
+          outputRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      } catch (err) {
+        setError(err.message);
+      }
+    });
   }
 
   return (
@@ -41,7 +40,7 @@ export default function App() {
         <Hero onStartLearning={scrollToStudio} />
 
         <div ref={studioRef}>
-          <NotesInput onGenerate={handleGenerate} isLoading={isLoading} />
+          <NotesInput onGenerate={handleGenerate} isLoading={isPending} />
         </div>
 
         {error && (
@@ -62,27 +61,27 @@ export default function App() {
           </div>
         )}
 
-        {isLoading && (
+        {isPending && (
           <div className="max-w-4xl mx-auto px-6 py-16">
             <div className="text-center mb-10">
               <div className="inline-flex items-center gap-3 glass-card px-6 py-3">
-                <svg className="animate-spin h-5 w-5 text-neutral-400" viewBox="0 0 24 24">
+                <svg className="animate-spin size-5 text-neutral-400" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                <span className="text-text-secondary font-body text-sm">AI is analyzing your notes...</span>
+                <span className="text-text-secondary font-body text-sm">AI is analyzing your notes…</span>
               </div>
             </div>
             <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="shimmer-loading h-24 rounded-2xl" />
+              {['placeholder-1', 'placeholder-2', 'placeholder-3'].map((id) => (
+                <div key={id} className="shimmer-loading h-24 rounded-2xl" />
               ))}
             </div>
           </div>
         )}
 
         <div ref={outputRef}>
-          {results && !isLoading && <OutputTabs data={results} />}
+          {results && !isPending && <OutputTabs data={results} />}
         </div>
 
         <Footer />

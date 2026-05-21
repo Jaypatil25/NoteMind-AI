@@ -63,10 +63,6 @@ export default function Hero({ onStartLearning }) {
           playsInline
           loop
           preload="auto"
-          webkit-playsinline="true"
-          x5-playsinline="true"
-          x5-video-player-type="h5"
-          x5-video-player-fullscreen="true"
           poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'%3E%3Crect fill='%23f5f5f5' width='1280' height='720'/%3E%3C/svg%3E"
           onError={(e) => {
             console.error('Video error:', e);
@@ -111,8 +107,8 @@ export default function Hero({ onStartLearning }) {
 
         <button
           onClick={onStartLearning}
-          className="mt-12 md:mt-16 bg-black text-white px-8 py-3.5 rounded-full text-sm font-medium font-body
-                     transition-all duration-300 hover:scale-[1.03] hover:shadow-lg hover:shadow-black/10
+          className="mt-12 md:mt-16 bg-gray-950 text-white px-8 py-3.5 rounded-full text-sm font-medium font-body
+                     transition-all duration-300 hover:scale-[1.03] hover:shadow-lg hover:shadow-gray-950/10
                      btn-press animate-on-load animate-fade-rise-delay-2"
         >
           Start Learning

@@ -1,73 +1,98 @@
-import { useState, useRef } from 'react';
+import { useReducer, useRef } from 'react';
 import { uploadPDF } from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import AuthModal from './AuthModal';
 
+const initialState = {
+  notes: '',
+  isDragging: false,
+  pdfInfo: null,
+  pdfLoading: false,
+  pdfError: null,
+  showAuthModal: false,
+};
+
+function notesReducer(state, action) {
+  switch (action.type) {
+    case 'SET_NOTES':
+      return { ...state, notes: action.payload };
+    case 'SET_DRAGGING':
+      return { ...state, isDragging: action.payload };
+    case 'SET_PDF_INFO':
+      return { ...state, pdfInfo: action.payload };
+    case 'SET_PDF_LOADING':
+      return { ...state, pdfLoading: action.payload };
+    case 'SET_PDF_ERROR':
+      return { ...state, pdfError: action.payload };
+    case 'SET_SHOW_AUTH_MODAL':
+      return { ...state, showAuthModal: action.payload };
+    case 'RESET_PDF':
+      return { ...state, pdfInfo: null, notes: '', pdfError: null };
+    default:
+      return state;
+  }
+}
+
 export default function NotesInput({ onGenerate, isLoading }) {
-  const [notes, setNotes] = useState('');
-  const [isDragging, setIsDragging] = useState(false);
-  const [pdfInfo, setPdfInfo] = useState(null);
-  const [pdfLoading, setPdfLoading] = useState(false);
-  const [pdfError, setPdfError] = useState(null);
-  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [state, dispatch] = useReducer(notesReducer, initialState);
   const fileInputRef = useRef(null);
   const { currentUser } = useAuth();
 
   function handleSubmit(e) {
     e.preventDefault();
-    if (!notes.trim() || isLoading) return;
+    if (!state.notes.trim() || isLoading) return;
     
     if (!currentUser) {
-      setShowAuthModal(true);
+      dispatch({ type: 'SET_SHOW_AUTH_MODAL', payload: true });
       return;
     }
     
-    onGenerate(notes);
+    onGenerate(state.notes);
   }
 
   async function handlePDF(file) {
     if (!currentUser) {
-      setShowAuthModal(true);
+      dispatch({ type: 'SET_SHOW_AUTH_MODAL', payload: true });
       return;
     }
     
     if (!file || file.type !== 'application/pdf') {
-      setPdfError('Please upload a PDF file.');
+      dispatch({ type: 'SET_PDF_ERROR', payload: 'Please upload a PDF file.' });
       return;
     }
     if (file.size > 10 * 1024 * 1024) {
-      setPdfError('PDF must be under 10MB.');
+      dispatch({ type: 'SET_PDF_ERROR', payload: 'PDF must be under 10MB.' });
       return;
     }
 
-    setPdfError(null);
-    setPdfLoading(true);
+    dispatch({ type: 'SET_PDF_ERROR', payload: null });
+    dispatch({ type: 'SET_PDF_LOADING', payload: true });
     try {
       const result = await uploadPDF(file);
-      setNotes(result.text);
-      setPdfInfo({ filename: result.filename, pages: result.pages });
+      dispatch({ type: 'SET_NOTES', payload: result.text });
+      dispatch({ type: 'SET_PDF_INFO', payload: { filename: result.filename, pages: result.pages } });
     } catch (err) {
-      setPdfError(err.message);
+      dispatch({ type: 'SET_PDF_ERROR', payload: err.message });
     } finally {
-      setPdfLoading(false);
+      dispatch({ type: 'SET_PDF_LOADING', payload: false });
     }
   }
 
   function handleDrop(e) {
     e.preventDefault();
-    setIsDragging(false);
+    dispatch({ type: 'SET_DRAGGING', payload: false });
     const file = e.dataTransfer.files[0];
     handlePDF(file);
   }
 
   function handleDragOver(e) {
     e.preventDefault();
-    setIsDragging(true);
+    dispatch({ type: 'SET_DRAGGING', payload: true });
   }
 
   function handleDragLeave(e) {
     e.preventDefault();
-    setIsDragging(false);
+    dispatch({ type: 'SET_DRAGGING', payload: false });
   }
 
   function handleFileSelect(e) {
@@ -77,9 +102,7 @@ export default function NotesInput({ onGenerate, isLoading }) {
   }
 
   function clearPdf() {
-    setPdfInfo(null);
-    setNotes('');
-    setPdfError(null);
+    dispatch({ type: 'RESET_PDF' });
   }
 
   return (
@@ -101,12 +124,12 @@ export default function NotesInput({ onGenerate, isLoading }) {
           <div
             className={`rounded-2xl border bg-white shadow-sm
                        transition-all duration-300 focus-within:shadow-md focus-within:border-neutral-300
-                       ${isDragging ? 'border-blue-400 bg-blue-50' : 'border-neutral-200'}`}
+                       ${state.isDragging ? 'border-blue-400 bg-blue-50' : 'border-neutral-200'}`}
           >
             <textarea
               id="notes-input"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
+              value={state.notes}
+              onChange={(e) => dispatch({ type: 'SET_NOTES', payload: e.target.value })}
               placeholder="Paste your notes here... lectures, textbook excerpts, study material"
               className="w-full min-h-[200px] bg-transparent text-text-primary font-body text-sm leading-relaxed
                          p-5 pb-3 resize-none outline-none placeholder:text-neutral-400 rounded-t-2xl"
@@ -116,7 +139,7 @@ export default function NotesInput({ onGenerate, isLoading }) {
             <div className="px-4 pb-4 pt-1 flex flex-col gap-3">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-[11px] text-neutral-300 font-body tabular-nums">
-                  {notes.length.toLocaleString()} chars
+                  {state.notes.length.toLocaleString()} chars
                 </span>
               </div>
 
@@ -130,22 +153,22 @@ export default function NotesInput({ onGenerate, isLoading }) {
                     className="hidden"
                   />
 
-                  {pdfLoading ? (
+                  {state.pdfLoading ? (
                     <div className="flex items-center gap-2 text-neutral-400">
-                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <svg className="animate-spin size-5" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      <span className="text-sm font-body">Extracting PDF...</span>
+                      <span className="text-sm font-body">Extracting PDF…</span>
                     </div>
-                  ) : pdfInfo ? (
+                  ) : state.pdfInfo ? (
                     <div className="flex items-center gap-3 text-emerald-600 bg-emerald-50 px-4 py-2.5 rounded-full border border-emerald-200">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
                         <polyline points="14,2 14,8 20,8" />
                       </svg>
-                      <span className="text-sm font-body truncate max-w-[200px]" title={pdfInfo.filename}>
-                        {pdfInfo.filename} — {pdfInfo.pages} page{pdfInfo.pages !== 1 ? 's' : ''}
+                      <span className="text-sm font-body truncate max-w-[200px]" title={state.pdfInfo.filename}>
+                        {state.pdfInfo.filename}: {state.pdfInfo.pages} page{state.pdfInfo.pages !== 1 ? 's' : ''}
                       </span>
                       <button
                         type="button"
@@ -164,7 +187,7 @@ export default function NotesInput({ onGenerate, isLoading }) {
                       className="flex items-center gap-2.5 text-neutral-600 hover:text-neutral-800 transition-colors
                                  bg-neutral-50 hover:bg-neutral-100 px-6 py-3 rounded-full border border-neutral-200
                                  hover:border-neutral-300 shadow-sm hover:shadow-md"
-                      disabled={pdfLoading}
+                      disabled={state.pdfLoading}
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
@@ -180,19 +203,19 @@ export default function NotesInput({ onGenerate, isLoading }) {
                 <button
                   id="generate-button"
                   type="submit"
-                  disabled={isLoading || !notes.trim()}
-                  className="bg-black text-white px-8 py-3.5 rounded-full text-sm font-medium font-body
+                  disabled={isLoading || !state.notes.trim()}
+                  className="bg-gray-950 text-white px-8 py-3.5 rounded-full text-sm font-medium font-body
                              transition-all duration-200 hover:bg-neutral-800 hover:scale-[1.02]
                              disabled:opacity-30 disabled:cursor-not-allowed
                              btn-press flex items-center gap-2 shadow-lg"
                 >
                   {isLoading ? (
                     <>
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <svg className="animate-spin size-4" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                       </svg>
-                      Generating...
+                      Generating…
                     </>
                   ) : (
                     <>
@@ -207,13 +230,13 @@ export default function NotesInput({ onGenerate, isLoading }) {
             </div>
           </div>
 
-          {pdfError && (
+          {state.pdfError && (
             <div className="mt-3 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 flex items-center gap-2">
               <span className="text-red-500 text-sm">⚠</span>
-              <span className="text-red-600 font-body text-xs">{pdfError}</span>
+              <span className="text-red-600 font-body text-xs">{state.pdfError}</span>
               <button
                 type="button"
-                onClick={() => setPdfError(null)}
+                onClick={() => dispatch({ type: 'SET_PDF_ERROR', payload: null })}
                 className="ml-auto text-red-300 hover:text-red-500 text-sm"
               >
                 ×
@@ -221,12 +244,12 @@ export default function NotesInput({ onGenerate, isLoading }) {
             </div>
           )}
 
-          {isDragging && (
+          {state.isDragging && (
             <div
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
-              className="fixed inset-0 z-50 bg-black/5 backdrop-blur-sm flex items-center justify-center"
+              className="fixed inset-0 z-50 bg-gray-950/5 backdrop-blur-sm flex items-center justify-center"
             >
               <div className="bg-white rounded-2xl border-2 border-dashed border-neutral-300 px-12 py-10 text-center shadow-xl">
                 <p className="text-text-primary font-body font-medium">Drop your PDF here</p>
@@ -236,8 +259,8 @@ export default function NotesInput({ onGenerate, isLoading }) {
           )}
 
           <AuthModal 
-            isOpen={showAuthModal} 
-            onClose={() => setShowAuthModal(false)} 
+            isOpen={state.showAuthModal} 
+            onClose={() => dispatch({ type: 'SET_SHOW_AUTH_MODAL', payload: false })}
           />
         </form>
       </div>

@@ -1,14 +1,67 @@
-import { useState, useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { signOut } from 'firebase/auth';
 import { useAuth } from '../contexts/AuthContext';
 import { auth } from '../firebase/config';
 import AuthModal from './AuthModal';
 
+function UserButton({ currentUser, showUserMenuRef, forceUpdate, setShowAuthModal, handleLogout }) {
+  if (currentUser) {
+    return (
+      <div className="relative">
+        <button
+          onClick={() => {
+            showUserMenuRef.current = !showUserMenuRef.current;
+            forceUpdate(v => v + 1);
+          }}
+          className="flex items-center gap-2 bg-neutral-100 hover:bg-neutral-200 px-4 py-2.5 rounded-full text-sm font-medium font-body transition-all duration-200"
+        >
+          <img
+            src={currentUser.photoURL || 'https://via.placeholder.com/32'}
+            alt={currentUser.displayName || 'User'}
+            className="size-6 rounded-full"
+          />
+          <span className="hidden md:block">{currentUser.displayName?.split(' ')[0] || 'User'}</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="6,9 12,15 18,9" />
+          </svg>
+        </button>
+
+        {showUserMenuRef.current && (
+          <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-neutral-200 py-2 z-50">
+            <div className="px-4 py-2 border-b border-neutral-100">
+              <p className="text-sm font-medium text-neutral-900">{currentUser.displayName}</p>
+              <p className="text-xs text-neutral-500">{currentUser.email}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
+            >
+              Sign out
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={() => setShowAuthModal(true)}
+      className="bg-gray-950 text-white px-6 py-2.5 rounded-full text-sm font-medium font-body
+                 transition-all duration-300 hover:scale-[1.03] hover:shadow-lg hover:shadow-black/10
+                 btn-press"
+    >
+      Sign In
+    </button>
+  );
+}
+
 export default function Navbar({ onStartLearning }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
+  const showUserMenuRef = useRef(false);
+  const [, forceUpdate] = useState(0);
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -22,65 +75,17 @@ export default function Navbar({ onStartLearning }) {
   async function handleLogout() {
     try {
       await signOut(auth);
-      setShowUserMenu(false);
+      showUserMenuRef.current = false;
+      forceUpdate(v => v + 1);
     } catch (error) {
       console.error('Error signing out:', error);
     }
   }
 
   const menuItems = [
-    { label: 'Home' },
-    { label: 'Reach Us' },
+    { label: 'Home', id: 'home' },
+    { label: 'Reach Us', id: 'reach-us' },
   ];
-
-  function UserButton() {
-    if (currentUser) {
-      return (
-        <div className="relative">
-          <button
-            onClick={() => setShowUserMenu(!showUserMenu)}
-            className="flex items-center gap-2 bg-neutral-100 hover:bg-neutral-200 px-4 py-2.5 rounded-full text-sm font-medium font-body transition-all duration-200"
-          >
-            <img
-              src={currentUser.photoURL || 'https://via.placeholder.com/32'}
-              alt={currentUser.displayName || 'User'}
-              className="w-6 h-6 rounded-full"
-            />
-            <span className="hidden md:block">{currentUser.displayName?.split(' ')[0] || 'User'}</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="6,9 12,15 18,9" />
-            </svg>
-          </button>
-
-          {showUserMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-neutral-200 py-2 z-50">
-              <div className="px-4 py-2 border-b border-neutral-100">
-                <p className="text-sm font-medium text-neutral-900">{currentUser.displayName}</p>
-                <p className="text-xs text-neutral-500">{currentUser.email}</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="w-full text-left px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors"
-              >
-                Sign out
-              </button>
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    return (
-      <button
-        onClick={() => setShowAuthModal(true)}
-        className="bg-black text-white px-6 py-2.5 rounded-full text-sm font-medium font-body
-                   transition-all duration-300 hover:scale-[1.03] hover:shadow-lg hover:shadow-black/10
-                   btn-press"
-      >
-        Sign In
-      </button>
-    );
-  }
 
   return (
     <>
@@ -89,11 +94,17 @@ export default function Navbar({ onStartLearning }) {
                     ${isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
       >
         <div className="flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
-          <a href="#" className="font-display text-3xl md:text-4xl text-black tracking-tight">
+          <button className="font-display text-3xl md:text-4xl text-black tracking-tight">
             NoteMind<sup className="text-xs align-super">®</sup>
-          </a>
+          </button>
 
-          <UserButton />
+          <UserButton
+            currentUser={currentUser}
+            showUserMenuRef={showUserMenuRef}
+            forceUpdate={forceUpdate}
+            setShowAuthModal={setShowAuthModal}
+            handleLogout={handleLogout}
+          />
 
           <button
             className="md:hidden text-black"
@@ -120,20 +131,19 @@ export default function Navbar({ onStartLearning }) {
                      bg-white/70 backdrop-blur-xl border border-white/30
                      shadow-[0_8px_32px_rgba(0,0,0,0.08),0_2px_8px_rgba(0,0,0,0.04)]"
         >
-          <a href="#" className="font-display text-2xl text-black tracking-tight">
+          <button className="font-display text-2xl text-black tracking-tight">
             NoteMind<sup className="text-[10px] align-super">®</sup>
-          </a>
+          </button>
 
           <div className="hidden md:flex items-center gap-6">
-            {menuItems.map((item, i) => (
-              <a
-                key={item.label}
-                href="#"
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
                 className={`text-sm font-body font-medium transition-colors duration-300 hover:text-black
-                           ${i === 0 ? 'text-black' : 'text-black/50'}`}
+                           ${item.id === 'home' ? 'text-black' : 'text-black/50'}`}
               >
                 {item.label}
-              </a>
+              </button>
             ))}
           </div>
 
@@ -155,15 +165,14 @@ export default function Navbar({ onStartLearning }) {
         {isMenuOpen && (
           <div className="md:hidden mx-4 mt-2 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/30
                           shadow-[0_8px_32px_rgba(0,0,0,0.08)] px-6 py-5 animate-slide-up">
-            {menuItems.map((item, i) => (
-              <a
-                key={item.label}
-                href="#"
-                className={`block py-2.5 text-sm font-body font-medium transition-colors duration-300 hover:text-black
-                           ${i === 0 ? 'text-black' : 'text-black/50'}`}
+            {menuItems.map((item) => (
+              <button
+                key={item.id}
+                className={`block py-2.5 text-sm font-body font-medium transition-colors duration-300 hover:text-black w-full text-left
+                           ${item.id === 'home' ? 'text-black' : 'text-black/50'}`}
               >
                 {item.label}
-              </a>
+              </button>
             ))}
             {currentUser ? (
               <div className="mt-3 pt-3 border-t border-neutral-200">
@@ -171,7 +180,7 @@ export default function Navbar({ onStartLearning }) {
                   <img
                     src={currentUser.photoURL || 'https://via.placeholder.com/32'}
                     alt={currentUser.displayName || 'User'}
-                    className="w-8 h-8 rounded-full"
+                    className="size-8 rounded-full"
                   />
                   <div>
                     <p className="text-sm font-medium text-neutral-900">{currentUser.displayName}</p>
@@ -188,7 +197,7 @@ export default function Navbar({ onStartLearning }) {
             ) : (
               <button
                 onClick={() => setShowAuthModal(true)}
-                className="mt-3 w-full bg-black text-white px-6 py-2.5 rounded-full text-sm font-medium font-body btn-press"
+                className="mt-3 w-full bg-gray-950 text-white px-6 py-2.5 rounded-full text-sm font-medium font-body btn-press"
               >
                 Sign In
               </button>

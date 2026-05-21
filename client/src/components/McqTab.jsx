@@ -30,9 +30,9 @@ export default function McqTab({ data }) {
   return (
     <div className="space-y-6">
       {randomizedQuestions.map((q, idx) => (
-        <div key={idx} className="glass-card glass-card-hover p-6">
+        <div key={q.question} className="glass-card glass-card-hover p-6">
           <div className="flex gap-3 mb-5">
-            <span className="flex-shrink-0 w-8 h-8 rounded-lg bg-neutral-100 text-text-primary text-sm font-bold
+            <span className="flex-shrink-0 size-8 rounded-lg bg-neutral-100 text-text-primary text-sm font-bold
                             flex items-center justify-center font-body">
               {idx + 1}
             </span>
