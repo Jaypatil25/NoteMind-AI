@@ -23,11 +23,19 @@ export default function AuthModal({ isOpen, onClose }) {
     setLoading(true);
 
     signInWithPopup(auth, provider)
-      .then(() => onClose())
+      .then(() => {
+        setLoading(false);
+        onClose();
+      })
       .catch((err) => {
         const code = err.code;
         if (code === 'auth/popup-blocked') {
-          signInWithRedirect(auth, provider);
+          // Use redirect for popup-blocked error
+          signInWithRedirect(auth, provider).catch(redirectErr => {
+            console.error('Redirect sign-in error:', redirectErr);
+            setError('Sign-in failed. Please try again.');
+            setLoading(false);
+          });
           return;
         }
         if (code !== 'auth/cancelled-popup-request') {

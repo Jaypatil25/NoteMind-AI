@@ -1,5 +1,5 @@
 import { createContext, use, useEffect, useReducer } from 'react';
-import { onAuthStateChanged, getRedirectResult } from 'firebase/auth';
+import { onAuthStateChanged, getRedirectResult, setPersistence, browserLocalPersistence } from 'firebase/auth';
 import { auth } from '../firebase/config';
 
 const AuthContext = createContext();
@@ -28,18 +28,32 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
+    let mounted = true;
+
     const initAuth = async () => {
       try {
+        // Set persistence to localStorage to maintain auth across page reloads
+        await setPersistence(auth, browserLocalPersistence);
+      } catch (error) {
+        console.error('Error setting persistence:', error);
+      }
+
+      try {
+        // Handle redirect result from OAuth redirect flow
         const result = await getRedirectResult(auth);
-        if (result?.user) {
+        if (mounted && result?.user) {
           dispatch({ type: 'SET_USER', payload: result.user });
+          return;
         }
       } catch (error) {
         console.error('Error getting redirect result:', error);
       }
 
+      // Set up listener for auth state changes
       const unsubscribe = onAuthStateChanged(auth, (user) => {
-        dispatch({ type: 'SET_USER', payload: user });
+        if (mounted) {
+          dispatch({ type: 'SET_USER', payload: user });
+        }
       });
 
       return unsubscribe;
@@ -47,11 +61,21 @@ export function AuthProvider({ children }) {
 
     let unsubscribe;
     initAuth().then(unsub => {
-      unsubscribe = unsub;
+      if (typeof unsub === 'function') {
+        unsubscribe = unsub;
+      }
+    }).catch(error => {
+      console.error('Error initializing auth:', error);
+      if (mounted) {
+        dispatch({ type: 'SET_LOADING', payload: false });
+      }
     });
 
     return () => {
-      if (unsubscribe) unsubscribe();
+      mounted = false;
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
     };
   }, []);
 

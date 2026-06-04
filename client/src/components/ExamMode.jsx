@@ -193,18 +193,21 @@ export default function ExamMode({ data }) {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <span className="text-xs text-neutral-400 font-body uppercase tracking-wider">
-              Question {state.currentIdx + 1} of {questions.length}
-            </span>
-          </div>
-          <div className={`text-xl font-body font-bold tabular-nums ${state.timeLeft <= 60 ? 'timer-warning' : 'text-text-primary'}`}>
-            {formatTime(state.timeLeft)}
-          </div>
+            Question {state.currentIdx + 1} of {questions.length}
+          </span>
         </div>
+        <div className={`text-xl font-body font-bold tabular-nums ${state.timeLeft <= 60 ? 'timer-warning' : 'text-text-primary'}`}>
+          {formatTime(state.timeLeft)}
+        </div>
+      </div>
 
-        <div className="w-full h-1 bg-neutral-100 rounded-full mb-8">
-          <div
-            className="h-full bg-gray-950 rounded-full transition-all duration-500"
-            style={{ width: `${((state.currentIdx + 1) / questions.length) * 100}%` }}
+      <div className="w-full h-1 bg-neutral-100 rounded-full mb-8">
+        <div
+          className="h-full bg-gray-950 rounded-full transition-all duration-500"
+          style={{ width: `${((state.currentIdx + 1) / questions.length) * 100}%` }}
+        />
+      </div>
+
       <div className="glass-card p-8 mb-6">
         <p className="text-text-primary font-body text-lg leading-relaxed">
           {q.question}
