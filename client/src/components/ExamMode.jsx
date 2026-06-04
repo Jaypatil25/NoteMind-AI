@@ -69,7 +69,7 @@ export default function ExamMode({ data }) {
 
 
 
-  if (!started) {
+  if (!state.started) {
     return (
       <div className="glass-card p-10 text-center max-w-lg mx-auto">
         <div className="size-16 rounded-2xl bg-neutral-100 flex items-center justify-center mx-auto mb-6">
@@ -97,7 +97,7 @@ export default function ExamMode({ data }) {
     );
   }
 
-  if (finished) {
+  if (state.finished) {
     const getScore = () => {
       let correct = 0;
       questions.forEach((q, idx) => {
@@ -146,7 +146,7 @@ export default function ExamMode({ data }) {
         <div className="space-y-4">
           <h4 className="text-lg font-display text-text-primary mb-4">Answer Review</h4>
           {questions.map((q, idx) => {
-            const userAnswer = selected[idx];
+            const userAnswer = state.selected[idx];
             const isCorrect = userAnswer === q.answer;
 
             return (
